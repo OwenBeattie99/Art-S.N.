@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Corrine Hunt",
+    "password": "password1",
+    "type": "artist"
+  },
+  {
+    "name": "Luke Choice",
+    "password": "password2",
+    "type": "artist"
+  },
+  {
+    "name": "Anatoliy Kushch",
+    "password": "password3",
+    "type": "artist"
+  },
+  {
+    "name": "Lea Roche",
+    "password": "password4",
+    "type": "artist"
+  },
+  {
+    "name": "Jim Dine",
+    "password": "password5",
+    "type": "artist"
+  },
+  {
+    "name": "Shari Hatt",
+    "password": "password6",
+    "type": "artist"
+  },
+  {
+    "name": "Sebastian McKinnon",
+    "password": "password7",
+    "type": "artist"
+  },
+  {
+    "name": "Kimika Hara",
+    "password": "password8",
+    "type": "artist"
+  },
+  {
+    "name": "Keith Mallett",
+    "password": "password9",
+    "type": "artist"
+  },
+  {
+    "name": "ArtMind",
+    "password": "password10",
+    "type": "artist"
+  },
+  {
+    "name": "Zil Hoque",
+    "password": "password11",
+    "type": "artist"
+  },
+  {
+    "name": "Paslier Morgan",
+    "password": "password12",
+    "type": "artist"
+  }
+]
