@@ -1,0 +1,67 @@
+html
+  head
+    title #{Title}
+    link(rel='stylesheet' href='/css/style.css')
+  body
+    include navigation.pug
+    h1 Add New Workshop
+    p Artist: #{User.name}
+    form(id="form-workshop" class="add-form add-workshop")
+      fieldset
+        p
+          label(for="workshop-name") Name
+          input(type="text" name="name" id="workshop-name" placeholder="")
+        p 
+          label(for="workshop-location") Location
+          input(type="text" name="location" id="workshop-location")
+        p
+          label(for="workshop-date") Date
+          input(type="date" name="date" id="workshop-date")      
+        p
+          label(for="workshop-start-time") Start Time
+          input(type="text" name="start" id="workshop-start-time" placeholder="i.e 3:00 pm")
+        p
+          label(for="workshop-end-time") End Time
+          input(type="text" name="end" id="workshop-end-time" placeholder="i.e 5:00 pm")
+        p
+          input(type ="submit" value="Add New Workshop" id="add-workshop")
+    script.
+      let formElement = document.getElementById('form-workshop');
+
+      formElement.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const nameElement        = document.getElementById('workshop-name');
+        const locationElement    = document.getElementById('workshop-location');
+        const dateElement        = document.getElementById('workshop-date');
+        const startTimeElement   = document.getElementById('workshop-start-time');
+        const endTimeElement     = document.getElementById('workshop-end-time');
+        
+        let bodyData = { 
+          "user_id": "#{User._id}",
+          "name": nameElement.value.trim(),
+          "location": locationElement.value.trim(),
+          "date": dateElement.value.trim(),
+          "start_time": startTimeElement.value.trim(),
+          "end_time": endTimeElement.value.trim(),
+        };
+
+        console.log("Form Data");
+        console.log(bodyData);
+
+        fetch("/workshop", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bodyData)
+        }).then((res) => {
+          if (res.ok){
+            alert('Artwork Created Successfully');
+            formElement.reset();
+
+          }else{
+            console.log("Error Submitting Workshop");
+          }
+        })
+      })
+      

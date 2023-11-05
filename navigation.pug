@@ -1,0 +1,23 @@
+nav
+  ul.navigation
+    li
+      span.brand Owen's Gallery
+    each page,i in navigation
+      li
+        a(href=page.url class=(PageUrl === page.url ? 'active' : ''))
+          span.name= page.title
+    if PageUrl === '/artwork'
+      li
+        a(href="#" class=(PageUrl === '/artwork' ? 'active' : ''))
+          span Artwork
+    if IsLoggedIn
+      li
+        a(href="/account" class=(PageUrl === '/account' ? 'active' : ''))
+          span Account
+      li
+        a(href="/logout")
+          span Logout
+    if !IsLoggedIn
+      li
+        a(href="/login" class=(PageUrl === '/login' ? 'active' : ''))
+          span Login

@@ -1,0 +1,76 @@
+doctype html
+html
+  head
+    title #{Title}
+    meta(charset='utf-8')
+    link(rel='stylesheet' href='/css/style.css')
+  body
+    include navigation.pug
+    h1 Gallery Search
+    .search-controls
+      input.search(id="search-field") 
+      select(name="field" id="select-field")
+        option(value="all" selected="true") All
+        option(value="category") Category
+        option(value="artist") Artist
+        option(value="name") Artwork Name
+        option(value="medium") Medium
+      button(id="search-button" class="search") Search
+    .pagination
+      - var n = 0;
+      ul
+        if previousPage
+          li.previous
+            a(href='/search?query=' + searchQuery + '&field=' + searchField + '&page='+ previousPage) <
+        while n < totalPages
+          - n++
+          if n == currentPage
+            li.active
+              span=n            
+          else
+            li
+              a(href='/search?query=' + searchQuery + '&field=' + searchField + '&page='+ n)=n
+        if nextPage
+          li.next
+            a(class="next" href='/search?query=' + searchQuery + '&field=' + searchField + '&page='+ nextPage) >      
+    .grid-container
+        div(class="cards" id="card-container")
+          each item in results
+            .card(id="card-"+i)
+              a(href="/artwork/" + item._id)
+                img(src=item.image alt=item.name)
+              .container
+                h4 #{item.name}
+                a(href="/artist/"+ item.artist) #{item.artist}
+                p #{item.description}
+    .pagination
+      - var n = 0;
+      ul
+        if previousPage
+          li.previous
+            a(href='/search?query=' + searchQuery + '&field=' + searchField + '&page='+ previousPage) <
+        while n < totalPages
+          - n++
+          if n == currentPage
+            li.active
+              span=n            
+          else
+            li
+              a(href='/search?query=' + searchQuery + '&field=' + searchField + '&page='+ n)=n
+        if nextPage
+          li.next
+            a(class="next" href='/search?query=' + searchQuery + '&field=' + searchField + '&page='+ nextPage) >
+      script.
+        const buttonElement = document.getElementById('search-button');
+
+        buttonElement.addEventListener('click', function(event) {
+          console.log("In Search button click");
+
+          const inputElement = document.getElementById('search-field');
+          const selectElement = document.getElementById('select-field');
+
+          console.log(inputElement.value);
+          console.log(selectElement.value);
+          window.location.href = `/search?query=${inputElement.value}&field=${selectElement.value}`;
+
+        });

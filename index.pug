@@ -1,0 +1,21 @@
+block variables
+  - var PageID = 'home';
+html
+  head
+    title #{Title}
+    link(rel='stylesheet' href='/css/style.css')
+  body
+    include navigation.pug
+    h1 Home Page
+    figure
+      figcaption Artists
+      ul.link-list
+        each artist in artists
+          li
+            a(href="/artist/"+artist)=artist
+    figure
+      figcaption Categories
+      ul.link-list
+        each category in categories
+          li
+            a(href="/search?query=" + category + "&field=category")=category

@@ -1,0 +1,35 @@
+doctype html
+html
+  head
+    title #{Title}
+    meta(charset='utf-8')
+    link(rel='stylesheet' href='/css/style.css')
+  body
+    include navigation.pug
+    h1 Artwork from the #{currentCategory} Category
+    .grid-container
+      each item in results
+        .image
+          a(target='_blank' href='/artwork/' + item._id )
+            img(src=item.image alt=item.name)
+          .description
+            |#{item.name}
+            br
+            |#{item.description}
+    .pagination
+      - var n = 0;
+      ul
+        if previousPage
+          li.previous
+            a(href='/category/' + currentCategory + '?page='+ previousPage) <
+        while n < totalPages
+          - n++
+          if n == currentPage
+            li.active
+              span=n            
+          else
+            li
+              a(href='/category/' + currentCategory + '?page='+ n)=n
+        if nextPage
+          li.next
+            a(class="next" href='/category/' + currentCategory + '?page='+ nextPage) >

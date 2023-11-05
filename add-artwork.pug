@@ -1,0 +1,69 @@
+html
+  head
+    title #{Title}
+    link(rel='stylesheet' href='/css/style.css')
+  body
+    include navigation.pug
+    h1 Add New Artwork
+    p Artist: #{User.name}
+    form(id="form-artwork" class="add-form add-workshop")
+      fieldset
+        p
+          label(for="Artwork-Name") Name
+          input(type="text" name="name" id="artwork-name" placeholder="")
+        p
+          label(for="Artwork-Year") Year
+          input(type="text" name="year" id="artwork-year" placeholder="")      
+        p
+          label(for="Artwork-Medium") Medium
+          input(type="text" name="medium" id="artwork-medium" placeholder="")
+        p   
+          label(for="Artwork-Category") Category
+          input(type="text" name="category" id="artwork-category" placeholder="")
+        p
+          label(for="Artwork-Image") Image (Url)
+          input(type="text" name="image" id="artwork-image" placeholder="")   
+        p   
+          label(for="Artwork-Descripton") Description
+          textarea(rows="2" cols="60" name="description" id="artwork-description")
+        p
+          input(type ="submit" value="Add New Artwork" id="add-artwork")
+    script.
+      let formElement = document.getElementById('form-artwork');
+
+      formElement.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const nameElement        = document.getElementById('artwork-name');
+        const yearElement        = document.getElementById('artwork-year');
+        const mediumElement      = document.getElementById('artwork-medium');
+        const categoryElement    = document.getElementById('artwork-category');
+        const imageElement       = document.getElementById('artwork-image');
+        const descriptionElement = document.getElementById('artwork-description');
+        
+        let bodyData = { 
+          "name": nameElement.value.trim(),
+          "artist": "#{User.name}",
+          "year": yearElement.value.trim(),
+          "medium": mediumElement.value.trim(),
+          "category": categoryElement.value.trim(),
+          "image": imageElement.value.trim(),
+          "description": descriptionElement.value.trim(),
+        };
+
+        fetch("/artwork", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bodyData)
+        }).then((res) => {
+          if (res.ok){
+            alert('Artwork Created Successfully');
+            formElement.reset();
+          }else{
+            alert("Error Submitting Artwork.  Please check Artwork Name does not already exist");
+            formElement.reset();
+          }
+        })
+      })
+  

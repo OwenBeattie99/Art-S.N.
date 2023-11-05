@@ -1,0 +1,256 @@
+ul.navigation {
+  list-style-type: none;
+  background-color: #282a35;
+}
+
+ul.navigation li {
+  display: inline;
+}
+
+ul.navigation li span.brand {
+  color: white;
+  padding: 14px 14px;
+}
+
+ul.navigation li a {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 14px 14px;
+  text-decoration: none;
+}
+
+ul.navigation li a.active {
+  background-color: #04aa6d;
+}
+
+button#follow-button {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  margin: 10px;
+}
+
+button#follow-button:hover {
+  border-left: 3px solid blue;
+}
+
+button#follow-button.disabled {
+  background-color: #ccc;
+}
+
+button#follow-button.disabled:hover {
+  border: none;
+}
+
+button.unfollow {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 5px;
+}
+
+button.unfollow:hover {
+  cursor: pointer;
+}
+
+/*Forms */
+form.add-form.add-workshop {
+  width: 450px;
+}
+
+form.add-form.add-workshop input {
+  width: 250px;
+}
+
+form.add-form {
+  width: 400px;
+}
+
+form.add-form p {
+  margin-top: 20px;
+}
+
+form.add-form label {
+  font-weight: bold;
+  width: 100px;
+  float: left;
+  text-align: right;
+  margin-right: 10px;
+  padding-top: 3px;
+}
+
+form.add-form label:after {
+  content: ": ";
+}
+
+form.add-form input {
+  padding: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  width: 200px;
+}
+
+form.add-form input.button-update {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  margin-left: 110px;
+  padding: 4px 0px;
+  width: 120px;
+}
+
+form.add-form input.button-update:disabled {
+  background-color: grey;
+}
+
+input.button-update:hover {
+  cursor: pointer;
+}
+
+/* Home Page */
+
+ul.link-list {
+  list-style-type: none;
+}
+
+ul.link-list li {
+  display: inline;
+  margin: 0px 5px;
+  padding-bottom: 2px;
+}
+
+ul.link-list li a,
+a:visited {
+  text-decoration: none;
+  border-bottom: 1px solid #409970;
+  color: #1e1915;
+  font-size: 1em;
+}
+
+ul.link-list li a:hover {
+  color: #409970;
+}
+
+div.description {
+  max-width: 450px;
+}
+
+div.pagination ul {
+  list-style-type: none;
+}
+
+div.pagination li {
+  display: inline;
+  text-align: center;
+}
+
+div.pagination li.active span {
+  background-color: rgb(255, 240, 217);
+}
+
+div.pagination li a {
+  border: 1px solid grey;
+  border-left: none;
+  display: inline-block;
+  width: 45px;
+  height: 45px;
+  margin: 0px;
+  padding: 0px;
+  line-height: 45px;
+}
+
+div.pagination li span {
+  border: 1px solid grey;
+  border-left: none;
+  display: inline-block;
+  width: 45px;
+  height: 45px;
+  margin: 0px;
+  padding: 0px;
+  line-height: 45px;
+}
+
+div.pagination li.active:first-child span {
+  border-left: 1px solid grey;
+}
+
+div.pagination li:first-child a {
+  border-left: 1px solid grey;
+}
+
+div.pagination li a,
+a:visited {
+  text-decoration: none;
+}
+
+/* Account Page */
+
+div.updates {
+  width: 25%;
+  background-color: aquamarine;
+  padding: 10px 5px;
+  margin: 10px 1px;
+}
+span.update-icon {
+  vertical-align: auto;
+  font-size: 20px;
+}
+
+/* https://www.w3schools.com/css/css3_flexbox.asp */
+div.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  align-items: flex-end;
+}
+
+.card img {
+  width: 150px;
+}
+
+.card {
+  /* https://www.w3schools.com/howto/howto_css_cards.asp */
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  padding: 10px 0px 0px 0px;
+  margin: 20px;
+  flex: 0 1 15%;
+  text-align: center;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+button.delete {
+  margin: 10px 0px;
+}
+
+/*Artwork Page*/
+a.liked {
+  color: red;
+  font-size: 30px;
+  text-decoration: none;
+}
+
+a.unliked {
+  color: black;
+  font-size: 30px;
+  text-decoration: none;
+}
+
+/* Search */
+
+.search-controls input,
+select {
+  margin-right: 5px;
+}

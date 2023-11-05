@@ -1,0 +1,117 @@
+doctype html
+html
+  head
+    title #{Title}
+    meta(charset='utf-8')
+    link(rel='stylesheet' href='/css/style.css')
+  body
+    include navigation.pug
+    h1 Artist Profile
+    p Artist: #{Artist.name}
+    if IsLoggedIn && userid != Artist._id
+      if !following
+        button(type=button id="follow-button" title="Click to follow Artist" data-action="follow") Follow
+      else
+        button(type=button id="follow-button" title="Already following artist" data-action="unfollow") Unfollow
+    .grid-container
+      div(class="cards" id="card-container")
+        each item in results
+          .card(id="card-"+i)
+            a(href="/artwork/" + item._id)
+              img(src=item.image alt=item.name)
+            .container
+              h4 #{item.name}
+              p #{item.artist}
+              p #{item.description}
+    .workshops
+      h2 Artist Workshops
+      if Workshops
+        div(class="cards" id="workshop-card-container")
+          each workshop,i in Workshops
+            .card(id="workshopcard-"+i)
+              .container
+                h4 #{workshop.name}
+                p #{workshop.location}
+                p #{workshop.date.toDateString()}
+                p from #{workshop.start_time} to #{workshop.end_time}
+                if IsLoggedIn && userid != Artist._id
+                  if !workshop.user_already_enrolled
+                    button(id="enroll-workhop-" + i data-workshopid=workshop._id class="enroll" data-index=i onclick="enrollWorkshop(this)") Enroll
+                  else
+                    p You are already enrolled in this workshop
+    script.
+      const buttonElement = document.getElementById('follow-button');
+      let apiMethod = "";
+      if(buttonElement){
+        buttonElement.addEventListener('click', function(event) {
+          console.log("In Follow/Unfollow button click handler");
+          let action = event.target.getAttribute("data-action");
+
+          if(action == "follow"){
+            apiMethod = "POST";
+          }else{
+            apiMethod = "DELETE";
+          }
+
+          let bodyData = { 
+            "userId": "#{userid}",
+            "artistId": "#{Artist._id.toString()}"
+          };
+
+          fetch("/follow", {
+            method: apiMethod,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(bodyData)
+          }).then((res) => {
+            if (res.ok){
+              console.log('Follow action Submitted Successfully');
+
+              // Swith the Button Text, Title, and its 'Action'
+              if(action == "follow"){
+                event.target.title = "Unfollow";
+                event.target.textContent = "Unfollow";
+                event.target.setAttribute("data-action", "unfollow");
+              }else{
+                event.target.title = "Follow";
+                event.target.textContent = "Follow";
+                event.target.setAttribute("data-action", "follow");
+              }
+            }else{
+              console.log("Error submitting Follow");
+            }
+          })
+        })
+      }
+    script. 
+      function enrollWorkshop(element){
+        let workshopId = element.getAttribute("data-workshopid");
+        let index = element.getAttribute("data-index");
+        let bodyData = { 
+          "workshop_id": workshopId,
+          "user_id": "#{userid}",
+        };
+
+        fetch("/enrollment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bodyData)
+        }).then((res) => {
+          if (res.ok){
+            alert('Successfully enrolled Workshop');
+            parentElement = element.parentElement;
+            element.remove();
+            let paragraphElement = document.createElement("p");
+            let paragraphText = document.createTextNode("You are already enrolled in this workshop");
+            paragraphElement.appendChild(paragraphText);
+            parentElement.appendChild(paragraphElement);
+
+          }else{
+            console.log("Error Deleting Review");
+          }
+        })
+      }
+      

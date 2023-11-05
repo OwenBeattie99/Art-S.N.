@@ -1,0 +1,150 @@
+html
+  head
+    title #{Title}
+    link(rel='stylesheet' href='/css/style.css')
+  body
+    include navigation.pug
+    h1 Artwork :: #{Artwork.name}
+    img(src=Artwork.image alt=Artwork.name style="max-width: 75%;")
+    br
+    if IsLoggedIn
+      if User.name != Artwork.artist
+        if !AlreadyLiked
+          a(href="#" class="unliked" data-artworkid=Artwork._id data-action="like" onclick="addLike(this); return false;") &#10084;
+        if AlreadyLiked
+          a(href="#" class="liked" data-artworkid=Artwork._id data-action="unlike" onclick="deleteLike(this); return false;") &#10084;
+    p(id="like-count") #{LikeCount} likes
+    p Artist: 
+      a(href="/artist/"+Artwork.artist)=Artwork.artist
+    p Year: #{Artwork.year}
+    p Category: 
+      a(href="/search?query="+Artwork.category+ "&field=category")=Artwork.category
+    p Medium: 
+      a(href="/search?query="+Artwork.medium+ "&field=medium")=Artwork.medium
+    p Description: #{Artwork.description}
+    if Reviews
+      div(id="review-container" class="reviews")='Reviews'
+        each review in Reviews
+          blockquote=review.text
+    if IsLoggedIn && !AlreadyReviewed && User.name != Artwork.artist
+      form(id="form-review")
+        | Add a Review:
+        br
+        textarea(rows="5" cols="60" name="review" id="review-text")
+        br
+        input(type ="submit" value="submit" id="submit-review")
+    script.
+        window.likeCount = #{LikeCount};
+    if IsLoggedIn
+      script.
+        let formElement = document.getElementById('form-review');
+        if(formElement){
+          let artworkId = "#{Artwork._id}";
+          let userId = "#{User._id}";
+          
+          formElement.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const textElement = document.getElementById('review-text');
+            
+            let bodyData = { 
+              "user_id": `${userId}`,
+              "artwork_id": `${artworkId}`,
+              "text": textElement.value.trim()
+            };
+
+            fetch("/review", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(bodyData)
+            }).then((res) => {
+              if (res.ok){
+                console.log('Review Submitted Successfully');
+                //Add Quote and remove Form
+                const reviewContainer = document.getElementById('review-container');
+                let quote = document.createElement("BLOCKQUOTE");
+                let quoteText = document.createTextNode(textElement.value.trim());
+  
+                quote.appendChild(quoteText);
+                reviewContainer.appendChild(quote);
+                formElement.remove();
+              }else{
+                console.log("Error submitting Follow");
+              }
+            })
+          })
+        }
+    if IsLoggedIn
+      script.
+        function addLike(element){
+          let artworkId = "#{Artwork._id}";
+          let userId = "#{User._id}";
+
+          let bodyData = { 
+            "artworkId": artworkId,
+            "userId": userId
+          };
+          console.log(bodyData);
+
+          fetch("/like", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(bodyData)
+            }).then((res) => {
+              if (res.ok){
+                console.log('Like Added Successfully');
+                toggleLikeButton(element);
+              }else{
+                console.log("Error submitting Follow");
+              }
+            })
+        }
+
+        function deleteLike(element){
+          let artworkId = "#{Artwork._id}";
+          let userId = "#{User.id}";
+          
+          let bodyData = { 
+            "artworkId": artworkId,
+            "userId": userId
+          };
+
+          console.log(bodyData);
+          fetch("/like", {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(bodyData)
+            }).then((res) => {
+              if (res.ok){
+                console.log('Like Deleted Successfully');
+                toggleLikeButton(element);
+              }else{
+                console.log("Error submitting Follow");
+              }
+            })
+        }
+
+        function toggleLikeButton(element){
+          let currentAction = element.getAttribute("data-action");
+          let likeTextElement = document.getElementById('like-count');
+
+          // Swith the Button Text, Title, and its 'Action'
+          if(currentAction == "like"){
+            element.className = "liked";
+            element.setAttribute("data-action", "unlike");
+            element.setAttribute('onclick','deleteLike(this);return false;')
+            window.likeCount++;
+            likeTextElement.innerText = `${window.likeCount} likes`;
+          }else{
+            element.className = "unliked";
+            element.setAttribute("data-action", "like");
+            element.setAttribute('onclick','addLike(this);return false;')
+            window.likeCount--;
+            likeTextElement.innerText = `${window.likeCount} likes`;
+          }
+        }

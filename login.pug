@@ -1,0 +1,35 @@
+html
+  head
+    title #{Title}
+    link(rel='stylesheet' href='/css/style.css')
+  body
+    include navigation.pug
+    h1 Login Page
+    form(id="form-login")
+        input(type="text", name="username", value="", placeholder="Full Name")
+        br
+        input(type="password", name="password", value="", placeholder="Password")
+        br
+        input(type="submit" value="Submit" id="submit-button")
+  script.
+    let formElement = document.getElementById('form-login');
+
+    formElement.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const formData = new FormData(formElement);
+      fetch("/submit-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams(formData)
+      }).then((res) => {
+        if (res.ok){
+          console.log('Submitted Successfully');
+          window.location.href = '/account';
+        }else{
+          alert("Invalid Password");
+          formElement.reset();
+        }
+      })
+    })

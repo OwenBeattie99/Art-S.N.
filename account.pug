@@ -1,0 +1,276 @@
+block variables
+  - var PageID = 'account';
+html
+  head
+    title #{Title}
+    link(rel='stylesheet' href='/css/style.css')
+  body
+    include navigation.pug
+    h1 Account Profile
+    if FollowedArtworkUpdates > 0 || FollowedWorkshopUpdates > 0
+      .updates
+        p 
+          span.update-icon &#x1F6C8; 
+          if FollowedArtworkUpdates > 0 && FollowedWorkshopUpdates > 0
+            span Artists you follow have added #{FollowedArtworkUpdates} new Artworks and #{FollowedWorkshopUpdates} Workshops in the last 5 Minutes!
+          else if FollowedArtworkUpdates > 0
+            span Artists you follow have added #{FollowedArtworkUpdates} new Artworks in the last 5 Minutes!
+          else
+            span Artists you follow have added #{FollowedWorkshopUpdates} new Workshops in the last 5 Minutes!
+    form(id="form-account" class="add-form")
+      fieldset
+        p
+          label(for='username') Username
+          input(type="text" name="username" value=User.name disabled="disabled" id="username")
+        p
+          label(for='password') Password
+          input(type="password" name="password" value="" placeholder="Update Password" onkeyup="enableSubmit()")
+        p
+          label(for='type') Type
+          select(name="type" id="select-type")
+            if User.type == "patron"
+              option(value="patron" selected="true") Patron
+              option(value="artist") Artist
+            else
+              option(value="patron") Patron
+              option(value="artist" selected="true") Artist
+        p 
+          input(type="submit" value="Update Account" id="update-button" disabled="disabled" class="button-update")
+    .reviews
+      h2 Reviewed Artwork
+      if Reviews && !Reviews.length == 0
+        div(class="cards" id="card-container")
+          each review,i in Reviews
+            .card(id="card-"+i)
+              img(src=review.artworkInfo.image alt=review.artworkInfo.name)
+              .container
+                h4 #{review.artworkInfo.name}
+                q #{review.text}
+                br
+                button(id="delete-" + i data-reviewid=review._id class="delete" data-index=i onclick="deleteReview(this)") Delete Review
+    .artists
+      h2 Followed Artists
+      ul.link-list
+        each follow,i in Follows
+            li
+              a(href="/artist/"+follow.artist.name)=follow.artist.name
+              button(id="unfollow-" + i data-artistid=follow.artist_id class="unfollow" data-index=i onclick="unfollowArtist(this)") X
+    .likes
+      h2 Liked Artwork 
+      if Likes
+        div(class="cards" id="like-card-container")
+          each like,i in Likes
+            .card(id="likecard-"+i)
+              a(href="/artwork/"+like.artwork._id)
+                img(src=like.artwork.image alt=like.artwork.name)
+              .container
+                h4 #{like.artwork.name}
+                p
+                  a(href="/artist/"+ like.artwork.artist) #{like.artwork.artist}
+                button(id="unlike-" + i data-artworkid=like.artwork._id class="delete" data-index=i onclick="unlikeArtwork(this)") Delete Like      
+    .workshops
+      h2 My Workshops
+      if Workshops
+        div(class="cards" id="workshop-card-container")
+          each workshop,i in Workshops
+            .card(id="workshopcard-"+i)
+              .container
+                h4 #{workshop.name}
+                p #{workshop.location}
+                p #{workshop.date.toDateString()}
+                p from #{workshop.start_time} to #{workshop.end_time}
+                button(id="delete-workhop-" + i data-workshopid=workshop._id class="delete" data-index=i onclick="deleteWorkshop(this)") Delete Workshop  
+      if User.type == 'artist'
+        a(href="/add-workshop" id="add-workshop") Add Workshop
+    .artwork
+      h2 My Artwork
+      if Artworks
+        div(class="cards" id="artwork-card-container")
+          each artwork,i in Artworks
+            .card(id="artworkcard-"+i)
+              a(href="/artwork/"+artwork._id)
+                img(src=artwork.image alt=artwork.name)
+              .container
+                h4 #{artwork.name}
+                p #{artwork.artist}
+                button(id="delete-artwork-" + i data-artworkid=artwork._id class="delete" data-index=i onclick="deleteArtwork(this)") Delete Artwork  
+      if User.type == 'artist'
+        a(href="/add-artwork" id="add-artwork") Add Artwork
+  script.
+    let formElement = document.getElementById('form-account');
+
+    formElement.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const formData = new FormData(formElement);
+      fetch("/account", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams(formData)
+      }).then((res) => {
+        if (res.ok){
+          console.log('Account Updated Successfully');
+          formElement.reset();
+          document.getElementById('update-button').disabled=true;
+        }else{
+          console.log('Account not updated');
+        }
+      }).finally(() => {
+        formElement.reset();
+      });
+    })
+  script.
+    let selectElement = document.getElementById('select-type');
+
+    selectElement.addEventListener("change", function() {
+      enableSubmit()
+    });
+
+    function enableSubmit(){
+      let updateElement = document.getElementById('update-button').disabled=false;
+    }
+
+    function deleteReview(element){
+      console.log("In Delete Review function");
+
+      let reviewId = element.getAttribute("data-reviewid");
+      let index = element.getAttribute("data-index");
+
+      let bodyData = { 
+        "review_id": reviewId,
+      };
+
+      fetch("/review", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData)
+      }).then((res) => {
+        if (res.ok){
+          console.log('Review Deleted Successfully');
+
+          let cardElement = document.getElementById(`card-${index}`);
+          let parentElement = document.getElementById("card-container");
+
+          // Delete the Review's Card
+          parentElement.removeChild(cardElement);
+
+        }else{
+          console.log("Error Deleting Review");
+        }
+      })
+      
+    }
+
+    function unfollowArtist(element){
+      console.log("In unfollowArtist function");
+
+      let user = !{JSON.stringify(User)};
+      let artistId = element.getAttribute("data-artistid");
+      let index = element.getAttribute("data-index");
+
+      let bodyData = { 
+        "artistId": artistId,
+        "userId": "#{User._id}"
+      };
+      
+      console.log(bodyData);
+
+      fetch("/follow", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData)
+      }).then((res) => {
+        if (res.ok){
+          console.log('Artist Unfollowed Successfully');
+          element.parentElement.remove();
+        }else{
+          console.log("Error Unfollowing Artist");
+        }
+      })
+    }
+
+    function unlikeArtwork(element){
+      console.log("In unlikeArtist function");
+      let artworkId = element.getAttribute("data-artworkid");
+      let index = element.getAttribute("data-index");
+      console.log(`Deleting Like for Artwork Id: ${artworkId}`);
+
+        let bodyData = { 
+          "artworkId": artworkId,
+          "userId": "#{User._id}"
+        };
+
+      fetch("/like", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData)
+      }).then((res) => {
+        if (res.ok){
+          console.log('Like Deleted Successfully');
+          let cardElement = document.getElementById(`likecard-${index}`);
+          let parentElement = document.getElementById("like-card-container");
+          
+          parentElement.removeChild(cardElement);
+
+        }else{
+          console.log("Error submitting Follow");
+        }
+      })
+    }
+
+    function deleteWorkshop(element){
+      let workshopId = element.getAttribute("data-workshopid");
+      let index = element.getAttribute("data-index");
+
+      let bodyData = { 
+        "workshopId": workshopId,
+        "userId": "#{User._id}"
+      };   
+
+      fetch("/workshop", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(bodyData),
+      }).then((res) => {
+        if(res.ok){
+          console.log('Workshop Deleted Successfully');
+          let cardElement = document.getElementById(`workshopcard-${index}`);
+          let parentElement = document.getElementById("workshop-card-container");
+          parentElement.removeChild(cardElement);
+        }
+      })
+    }
+
+    function deleteArtwork(element){
+      console.log("In local deleteArtwork() function");
+      let artworkId = element.getAttribute("data-artworkid");
+      let index = element.getAttribute("data-index");
+
+      let bodyData = { 
+        "artworkId": artworkId,
+      };   
+
+      fetch("/artwork", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(bodyData),
+      }).then((res) => {
+        if(res.ok){
+          console.log('Artwork Deleted Successfully');
+          let cardElement = document.getElementById(`artworkcard-${index}`);
+          let parentElement = document.getElementById("artwork-card-container");
+          parentElement.removeChild(cardElement);
+        }
+      })
+    }
